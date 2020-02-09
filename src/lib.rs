@@ -1,6 +1,7 @@
 
 /// Contains core functionality
 pub mod core {
+    use std::io::{Write, Stdout,stdout};
     /// Prints a line graph
     pub fn line(min:f32,max:f32,data:&Vec<f32>,height:usize,h_spacing:usize) {
         
@@ -28,67 +29,70 @@ pub mod core {
             *val = *val - inner_min;
         }
 
-        println!("       │");
+        let mut stdout = stdout();
+
+        stdout.write(format!("").as_bytes()).unwrap();
+        stdout.write(format!("       │").as_bytes()).unwrap();
 
         for i in (1usize..inner_max as usize + 2usize).rev() {
-            vertical_scale(data,&inner_data,i);
+            vertical_scale(&mut stdout,data,&inner_data,i);
 
             for t in 0..inner_data.len() {
-                print!("{: <1$}","",h_spacing);
+                stdout.write(format!("{: <1$}","",h_spacing).as_bytes()).unwrap();
                 if inner_data[t] < i as f32 && inner_data[t] >= (i-1) as f32  {
-                    print!("*");
+                    stdout.write("*".as_bytes()).unwrap();
                 }
                 else {
-                    print!(" ");
+                    stdout.write(" ".as_bytes()).unwrap();
                 }
                 
             }
-            
-            println!();
+            // TODO Is `format!` needed here?
+            stdout.write(format!("\n").as_bytes()).unwrap();
         }
-        horizontal_scale(data,&inner_data,h_spacing);
-        println!();
+        horizontal_scale(&mut stdout,data,&inner_data,h_spacing);
+        stdout.write(format!("\n").as_bytes()).unwrap();
 
         // TODO Adjust this to scale properly
-        fn vertical_scale(data:&Vec<f32>,inner_data:&Vec<f32>,i:usize) {
+        fn vertical_scale(stdout:&mut Stdout,data:&Vec<f32>,inner_data:&Vec<f32>,i:usize) {
             let mut increment_print = false;
             
             for t in 0..inner_data.len() {
                 if inner_data[t] as usize == i - 1 {
-                    print!(" {:+.2} ",data[t]);
+                    stdout.write(format!(" {:+.2} ",data[t]).as_bytes()).unwrap();
                     increment_print = true;
                     break;
                 }
             }
             if !increment_print {
-                print!("       ");
+                stdout.write("       ".as_bytes()).unwrap();
             }
-            print!("│");
+            stdout.write("│".as_bytes()).unwrap();
         }
 
-        fn horizontal_scale(data:&Vec<f32>,inner_data:&Vec<f32>,h_spacing:usize) {
+        fn horizontal_scale(stdout:&mut Stdout,data:&Vec<f32>,inner_data:&Vec<f32>,h_spacing:usize) {
             let v_axis_offset = 7usize;
-            print!("{: <1$}","",v_axis_offset);
-            println!("└{:─<1$}","",((inner_data.len()+1)*(h_spacing+1)) + 3);
-
+            stdout.write(format!("{: <1$}","",v_axis_offset).as_bytes()).unwrap();
+            stdout.write(format!("└{:─<1$}","",((inner_data.len()+1)*(h_spacing+1)) + 3).as_bytes()).unwrap();
+            stdout.write(format!("{: <1$}","",v_axis_offset+1).as_bytes()).unwrap();
             // Prints x-axis scale
-            print!("{: <1$}","",v_axis_offset+1);
             for i in 0..inner_data.len() {
-                print!("{: <1$}","",h_spacing);
-                print!("{}",i%10);
+                stdout.write(format!("{: <1$}","",h_spacing).as_bytes()).unwrap();
+                stdout.write(format!("{}",i%10).as_bytes()).unwrap();
             }
-            print!("\n{: <1$}","",v_axis_offset+1);
+            stdout.write(format!("\n{: <1$}","",v_axis_offset+1).as_bytes()).unwrap();
             for _ in 0..inner_data.len() / 10 {
-                print!("└{:─<1$}┘","",(10*(h_spacing+1))-2);
+                stdout.write(format!("└{:─<1$}┘","",(10*(h_spacing+1))-2).as_bytes()).unwrap();
             }
             let remainder_labels = inner_data.len()%10;
             let remainder_space = remainder_labels*(h_spacing+1);
-            print!("└{:─<1$}","",remainder_space);
-            print!("\n{: <1$}","",v_axis_offset+h_spacing);
-            print!("{: <1$}","",5*(h_spacing+1));
+            stdout.write(format!("└{:─<1$}","",remainder_space).as_bytes()).unwrap();
+            stdout.write(format!("\n{: <1$}","",v_axis_offset+h_spacing).as_bytes()).unwrap();
+            stdout.write(format!("{: <1$}","",5*(h_spacing+1)).as_bytes()).unwrap();
+
             for i in 0..inner_data.len() / 10 {
-                print!("{:0>2}",i);
-                print!("{: <1$}","",(10*(h_spacing+1))-2);
+                stdout.write(format!("{:0>2}",i).as_bytes()).unwrap();
+                stdout.write(format!("{: <1$}","",(10*(h_spacing+1))-2).as_bytes()).unwrap();
             }
         } 
     }
