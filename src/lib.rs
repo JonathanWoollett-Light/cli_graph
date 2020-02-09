@@ -108,7 +108,7 @@ mod tests {
     use crate::core::line;
     use std::f32;
     #[test]
-    fn pyramid() {
+    fn up_pyramid() {
         let data = vec![
             1f32,2f32,3f32,4f32,5f32,4f32,3f32,2f32,1f32
         ];
@@ -117,7 +117,7 @@ mod tests {
         assert!(false);
     }
     #[test]
-    fn upsidedown_pyramid() {
+    fn down_pyramid() {
         let mut data = vec![
             1f32,2f32,3f32,4f32,5f32,4f32,3f32,2f32,1f32
         ];
